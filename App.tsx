@@ -1,4 +1,3 @@
-import { LinearGradient } from 'expo-linear-gradient';
 import { StatusBar } from 'expo-status-bar';
 import {
   FlatList,
@@ -13,6 +12,7 @@ import DraggableFlatList from 'react-native-draggable-flatlist';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { DoctorCard, DoctorFormModal } from './src/components/doctors';
 import { SlideCard, SlideshowModal } from './src/components/slides';
+import { LoadingOverlay } from './src/components/common';
 import { useDoctors, usePersistence, useSlideshow } from './src/hooks';
 import { styles } from './src/styles/appStyles';
 
@@ -40,6 +40,7 @@ export default function App() {
     addSlidesFromGallery,
     removeSlide,
     reorderSlides,
+    isLoadingImages,
   } = useDoctors();
 
   const {
@@ -68,8 +69,8 @@ export default function App() {
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
       <SafeAreaView style={styles.safeArea}>
-        <StatusBar style="light" hidden={isSlideshowMode && !isSlideshowUiVisible} />
-        <LinearGradient colors={['#09203f', '#1f4e79', '#4b86b4']} style={styles.gradientBg}>
+        <StatusBar style="dark" hidden={isSlideshowMode && !isSlideshowUiVisible} />
+        <View style={styles.gradientBg}>
           <FlatList
             data={[{ id: 'page' }]}
             keyExtractor={(item) => item.id}
@@ -93,7 +94,7 @@ export default function App() {
                     value={searchQuery}
                     onChangeText={setSearchQuery}
                     placeholder="Search by name, specialty, or hospital..."
-                    placeholderTextColor="#94a3b8"
+                    placeholderTextColor="#d1d5db"
                     style={styles.searchInput}
                   />
 
@@ -137,10 +138,10 @@ export default function App() {
                       </Pressable>
                       {selectedDoctor && selectedDoctor.slides.length > 0 && (
                         <Pressable
-                          style={[styles.secondaryBtn, styles.slideshowBtn]}
+                          style={[styles.primaryBtn]}
                           onPress={() => openSlideshow(0)}
                         >
-                          <Text style={styles.secondaryBtnText}>Show</Text>
+                          <Text style={styles.primaryBtnText}>Show</Text>
                         </Pressable>
                       )}
                     </View>
@@ -197,7 +198,8 @@ export default function App() {
               onNoteChange={onNoteChange}
             />
           )}
-        </LinearGradient>
+        </View>
+        <LoadingOverlay visible={isLoadingImages} message="Adding images..." />
       </SafeAreaView>
     </GestureHandlerRootView>
   );

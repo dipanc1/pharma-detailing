@@ -1,3 +1,4 @@
+import { memo } from 'react';
 import { FlatList, Image, Modal, Pressable, Text, TextInput, View } from 'react-native';
 import { Doctor } from '../../types/models';
 import { styles } from '../../styles/appStyles';
@@ -15,7 +16,7 @@ type SlideshowModalProps = {
   onNoteChange: (slideId: string, value: string) => void;
 };
 
-export function SlideshowModal({
+function SlideshowModalComponent({
   visible,
   doctor,
   screenWidth,
@@ -78,7 +79,7 @@ export function SlideshowModal({
                 onNoteChange(activeSlide.id, value);
               }}
               placeholder="Write note for this slide..."
-              placeholderTextColor="#94a3b8"
+              placeholderTextColor="#a0aec0"
               style={styles.slideNoteInput}
             />
           </View>
@@ -87,3 +88,5 @@ export function SlideshowModal({
     </Modal>
   );
 }
+
+export const SlideshowModal = memo(SlideshowModalComponent);

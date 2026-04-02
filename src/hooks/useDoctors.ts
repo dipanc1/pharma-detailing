@@ -1,5 +1,5 @@
 import { Alert } from 'react-native';
-import { useMemo, useState } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 import * as ImagePicker from 'expo-image-picker';
 import { Doctor, Slide } from '../types/models';
 import { uid } from '../utils/id';
@@ -12,6 +12,7 @@ export function useDoctors() {
   const [specialty, setSpecialty] = useState('');
   const [hospital, setHospital] = useState('');
   const [searchQuery, setSearchQuery] = useState('');
+  const [isLoadingImages, setIsLoadingImages] = useState(false);
 
   const selectedDoctor = useMemo(
     () => doctors.find((doc) => doc.id === selectedDoctorId) ?? null,
@@ -29,13 +30,13 @@ export function useDoctors() {
     );
   }, [doctors, searchQuery]);
 
-  const resetDoctorForm = () => {
+  const resetDoctorForm = useCallback(() => {
     setDoctorName('');
     setSpecialty('');
     setHospital('');
-  };
+  }, []);
 
-  const addDoctor = () => {
+  const addDoctor = useCallback(() => {
     if (!doctorName.trim()) {
       Alert.alert('Doctor Name Required', 'Please enter the doctor name.');
       return;
@@ -53,9 +54,9 @@ export function useDoctors() {
     setSelectedDoctorId(newDoctor.id);
     setIsDoctorModalVisible(false);
     resetDoctorForm();
-  };
+  }, [doctorName, specialty, hospital, resetDoctorForm]);
 
-  const removeDoctor = (doctorId: string) => {
+  const removeDoctor = useCallback((doctorId: string) => {
     Alert.alert(
       'Delete Doctor',
       'This will remove the doctor and all selected detail slides. Continue?',
@@ -67,18 +68,18 @@ export function useDoctors() {
           onPress: () => {
             setDoctors((prev) => {
               const updated = prev.filter((doc) => doc.id !== doctorId);
-              if (selectedDoctorId === doctorId) {
-                setSelectedDoctorId(updated.length > 0 ? updated[0].id : null);
-              }
+              setSelectedDoctorId((current) =>
+                current === doctorId ? (updated.length > 0 ? updated[0].id : null) : current,
+              );
               return updated;
             });
           },
         },
       ],
     );
-  };
+  }, []);
 
-  const addSlidesFromGallery = async () => {
+  const addSlidesFromGallery = useCallback(async () => {
     if (!selectedDoctor) {
       Alert.alert('Select Doctor', 'Choose a doctor first to add slides.');
       return;
@@ -90,37 +91,43 @@ export function useDoctors() {
       return;
     }
 
-    const result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ['images'],
-      allowsEditing: false,
-      allowsMultipleSelection: true,
-      orderedSelection: true,
-      quality: 0.85,
-      selectionLimit: 20,
-    });
+    setIsLoadingImages(true);
+    try {
+      const result = await ImagePicker.launchImageLibraryAsync({
+        mediaTypes: ['images'],
+        allowsEditing: false,
+        allowsMultipleSelection: true,
+        orderedSelection: true,
+        quality: 0.7,
+        selectionLimit: 20,
+      });
 
-    if (result.canceled) {
-      return;
+      if (result.canceled) {
+        setIsLoadingImages(false);
+        return;
+      }
+
+      const newSlides: Slide[] = result.assets.map((asset) => ({
+        id: uid(),
+        uri: asset.uri,
+      }));
+
+      setDoctors((prev) =>
+        prev.map((doc) =>
+          doc.id === selectedDoctor.id
+            ? {
+                ...doc,
+                slides: [...doc.slides, ...newSlides],
+              }
+            : doc,
+        ),
+      );
+    } finally {
+      setIsLoadingImages(false);
     }
+  }, [selectedDoctor]);
 
-    const newSlides: Slide[] = result.assets.map((asset) => ({
-      id: uid(),
-      uri: asset.uri,
-    }));
-
-    setDoctors((prev) =>
-      prev.map((doc) =>
-        doc.id === selectedDoctor.id
-          ? {
-              ...doc,
-              slides: [...doc.slides, ...newSlides],
-            }
-          : doc,
-      ),
-    );
-  };
-
-  const removeSlide = (slideId: string) => {
+  const removeSlide = useCallback((slideId: string) => {
     if (!selectedDoctor) {
       return;
     }
@@ -135,9 +142,9 @@ export function useDoctors() {
           : doc,
       ),
     );
-  };
+  }, [selectedDoctor]);
 
-  const reorderSlides = (slides: Slide[]) => {
+  const reorderSlides = useCallback((slides: Slide[]) => {
     if (!selectedDoctor) {
       return;
     }
@@ -152,7 +159,7 @@ export function useDoctors() {
           : doc,
       ),
     );
-  };
+  }, [selectedDoctor]);
 
   return {
     doctors,
@@ -177,5 +184,6 @@ export function useDoctors() {
     addSlidesFromGallery,
     removeSlide,
     reorderSlides,
+    isLoadingImages,
   };
 }

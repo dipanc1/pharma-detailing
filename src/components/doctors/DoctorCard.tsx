@@ -1,3 +1,4 @@
+import { memo } from 'react';
 import { Pressable, Text, View } from 'react-native';
 import { Doctor } from '../../types/models';
 import { styles } from '../../styles/appStyles';
@@ -9,7 +10,7 @@ type DoctorCardProps = {
   onDelete: (doctorId: string) => void;
 };
 
-export function DoctorCard({ doctor, isActive, onSelect, onDelete }: DoctorCardProps) {
+function DoctorCardComponent({ doctor, isActive, onSelect, onDelete }: DoctorCardProps) {
   return (
     <Pressable
       onPress={() => onSelect(doctor.id)}
@@ -29,3 +30,5 @@ export function DoctorCard({ doctor, isActive, onSelect, onDelete }: DoctorCardP
     </Pressable>
   );
 }
+
+export const DoctorCard = memo(DoctorCardComponent);

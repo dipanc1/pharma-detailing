@@ -1,3 +1,4 @@
+import { memo } from 'react';
 import { Image, Pressable, Text, View } from 'react-native';
 import { RenderItemParams, ScaleDecorator } from 'react-native-draggable-flatlist';
 import { Slide } from '../../types/models';
@@ -8,7 +9,7 @@ type SlideCardProps = {
   onRemove: (slideId: string) => void;
 };
 
-export function SlideCard({ params, onRemove }: SlideCardProps) {
+function SlideCardComponent({ params, onRemove }: SlideCardProps) {
   const { item, drag, isActive, getIndex } = params;
   const index = getIndex() ?? 0;
 
@@ -31,3 +32,5 @@ export function SlideCard({ params, onRemove }: SlideCardProps) {
     </ScaleDecorator>
   );
 }
+
+export const SlideCard = memo(SlideCardComponent);

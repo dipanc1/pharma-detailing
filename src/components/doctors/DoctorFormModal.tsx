@@ -1,3 +1,4 @@
+import { memo } from 'react';
 import { Modal, Pressable, Text, TextInput, View } from 'react-native';
 import { styles } from '../../styles/appStyles';
 
@@ -13,7 +14,7 @@ type DoctorFormModalProps = {
   onCreate: () => void;
 };
 
-export function DoctorFormModal({
+function DoctorFormModalComponent({
   visible,
   doctorName,
   specialty,
@@ -33,21 +34,21 @@ export function DoctorFormModal({
             value={doctorName}
             onChangeText={onChangeDoctorName}
             placeholder="Doctor Name"
-            placeholderTextColor="#64748b"
+            placeholderTextColor="#d1d5db"
             style={styles.input}
           />
           <TextInput
             value={specialty}
             onChangeText={onChangeSpecialty}
             placeholder="Specialty (optional)"
-            placeholderTextColor="#64748b"
+            placeholderTextColor="#d1d5db"
             style={styles.input}
           />
           <TextInput
             value={hospital}
             onChangeText={onChangeHospital}
             placeholder="Hospital / Clinic (optional)"
-            placeholderTextColor="#64748b"
+            placeholderTextColor="#d1d5db"
             style={styles.input}
           />
           <View style={styles.modalActions}>
@@ -63,3 +64,5 @@ export function DoctorFormModal({
     </Modal>
   );
 }
+
+export const DoctorFormModal = memo(DoctorFormModalComponent);
