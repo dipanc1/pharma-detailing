@@ -19,6 +19,7 @@
       }
     },
     "android": {
+      "package": "com.dsmedicalagencies.detailing",
       "permissions": [
         "READ_MEDIA_IMAGES",
         "READ_EXTERNAL_STORAGE"
