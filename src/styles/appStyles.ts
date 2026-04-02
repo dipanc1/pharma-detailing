@@ -141,7 +141,7 @@ export const styles = StyleSheet.create({
     fontSize: 13,
   },
   separator: {
-    height: 10,
+    height: 14,
   },
   selectedDoctorInfo: {
     color: MID_TEXT,
