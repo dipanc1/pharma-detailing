@@ -32,6 +32,12 @@
     },
     "web": {
       "favicon": "./assets/favicon.png"
-    }
+    },
+    "extra": {
+      "eas": {
+        "projectId": "b5621e19-c712-4e2c-af2f-dd2ff439fcb9"
+      }
+    },
+    "owner": "dipanc1"
   }
 }
