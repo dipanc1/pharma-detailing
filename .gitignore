@@ -40,5 +40,5 @@ yarn-error.*
 /ios
 /android
 
-#build-share
-/build-share
+# build artifacts copied for sharing
+/build-share/
