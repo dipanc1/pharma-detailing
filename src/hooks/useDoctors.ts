@@ -5,6 +5,8 @@ import { Doctor, Slide } from '../types/models';
 import { uid } from '../utils/id';
 
 export function useDoctors() {
+  const MAX_IMPORT_SLIDES = 8;
+
   const [doctors, setDoctors] = useState<Doctor[]>([]);
   const [selectedDoctorId, setSelectedDoctorId] = useState<string | null>(null);
   const [isDoctorModalVisible, setIsDoctorModalVisible] = useState(false);
@@ -98,8 +100,8 @@ export function useDoctors() {
         allowsEditing: false,
         allowsMultipleSelection: true,
         orderedSelection: true,
-        quality: 0.7,
-        selectionLimit: 20,
+        quality: 0.5,
+        selectionLimit: MAX_IMPORT_SLIDES,
       });
 
       if (result.canceled) {
@@ -107,7 +109,21 @@ export function useDoctors() {
         return;
       }
 
-      const newSlides: Slide[] = result.assets.map((asset) => ({
+      if (!result.assets?.length) {
+        setIsLoadingImages(false);
+        return;
+      }
+
+      const selectedAssets = result.assets.slice(0, MAX_IMPORT_SLIDES);
+
+      if (result.assets.length > MAX_IMPORT_SLIDES) {
+        Alert.alert(
+          'Slide Limit Applied',
+          `Only the first ${MAX_IMPORT_SLIDES} images were added to keep performance stable on older phones.`,
+        );
+      }
+
+      const newSlides: Slide[] = selectedAssets.map((asset) => ({
         id: uid(),
         uri: asset.uri,
       }));

@@ -1,4 +1,4 @@
-import { memo } from 'react';
+import { memo, useRef } from 'react';
 import { FlatList, Image, Modal, Pressable, Text, TextInput, View } from 'react-native';
 import { Doctor } from '../../types/models';
 import { styles } from '../../styles/appStyles';
@@ -28,6 +28,8 @@ function SlideshowModalComponent({
   onSlideChange,
   onNoteChange,
 }: SlideshowModalProps) {
+  const flatListRef = useRef<FlatList<Doctor['slides'][number]>>(null);
+
   const onMomentumEnd = (event: any) => {
     const slideWidth = event.nativeEvent.layoutMeasurement.width;
     const index = Math.round(event.nativeEvent.contentOffset.x / slideWidth);
@@ -47,21 +49,40 @@ function SlideshowModalComponent({
         )}
 
         <FlatList
+          ref={flatListRef}
           data={doctor.slides}
           keyExtractor={(item) => item.id}
           horizontal
           pagingEnabled
           showsHorizontalScrollIndicator={false}
           initialScrollIndex={currentSlideIndex}
+          initialNumToRender={1}
+          maxToRenderPerBatch={1}
+          windowSize={2}
+          removeClippedSubviews
           getItemLayout={(_, index) => ({
             length: screenWidth,
             offset: screenWidth * index,
             index,
           })}
+          onScrollToIndexFailed={(info) => {
+            setTimeout(() => {
+              flatListRef.current?.scrollToIndex({
+                index: Math.max(0, Math.min(info.index, doctor.slides.length - 1)),
+                animated: false,
+              });
+            }, 50);
+          }}
           onMomentumScrollEnd={onMomentumEnd}
           renderItem={({ item }) => (
             <Pressable style={[styles.slidePage, { width: screenWidth }]} onPress={onToggleUi}>
-              <Image source={{ uri: item.uri }} style={styles.slideshowImage} resizeMode="contain" />
+              <Image
+                source={{ uri: item.uri }}
+                style={styles.slideshowImage}
+                resizeMode="contain"
+                resizeMethod="resize"
+                fadeDuration={0}
+              />
             </Pressable>
           )}
         />

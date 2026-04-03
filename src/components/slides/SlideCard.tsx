@@ -20,7 +20,13 @@ function SlideCardComponent({ params, onRemove }: SlideCardProps) {
         delayLongPress={180}
         style={[styles.slideCard, isActive && styles.slideCardActive]}
       >
-        <Image source={{ uri: item.uri }} style={styles.slideImage} resizeMode="cover" />
+        <Image
+          source={{ uri: item.uri }}
+          style={styles.slideImage}
+          resizeMode="cover"
+          resizeMethod="resize"
+          fadeDuration={0}
+        />
         <View style={styles.slideCardContent}>
           <Text style={styles.slideTitle}>Slide {index + 1}</Text>
           <Text style={styles.slideHint}>Long press and drag to reorder</Text>
