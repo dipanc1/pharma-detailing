@@ -8,7 +8,6 @@ import {
   useWindowDimensions,
   View,
 } from 'react-native';
-import DraggableFlatList from 'react-native-draggable-flatlist';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { DoctorCard, DoctorFormModal } from './src/components/doctors';
 import { SlideCard, SlideshowModal } from './src/components/slides';
@@ -39,7 +38,7 @@ export default function App() {
     removeDoctor,
     addSlidesFromGallery,
     removeSlide,
-    reorderSlides,
+    moveSlide,
     isLoadingImages,
   } = useDoctors();
 
@@ -152,14 +151,22 @@ export default function App() {
                       Add images and then drag to set your narrative order before the visit.
                     </Text>
                   ) : (
-                    <DraggableFlatList
+                    <FlatList
                       data={selectedDoctor.slides}
-                      onDragEnd={({ data }) => reorderSlides(data)}
                       keyExtractor={(item) => item.id}
-                      renderItem={(params) => <SlideCard params={params} onRemove={removeSlide} />}
+                      renderItem={({ item, index }) => (
+                        <SlideCard
+                          slide={item}
+                          index={index}
+                          canMoveUp={index > 0}
+                          canMoveDown={index < selectedDoctor.slides.length - 1}
+                          onMoveUp={() => moveSlide(index, index - 1)}
+                          onMoveDown={() => moveSlide(index, index + 1)}
+                          onRemove={removeSlide}
+                        />
+                      )}
                       scrollEnabled={false}
-                      containerStyle={styles.slidesList}
-                      activationDistance={8}
+                      contentContainerStyle={styles.slidesList}
                     />
                   )}
                 </View>

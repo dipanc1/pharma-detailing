@@ -177,6 +177,37 @@ export function useDoctors() {
     );
   }, [selectedDoctor]);
 
+  const moveSlide = useCallback((fromIndex: number, toIndex: number) => {
+    if (!selectedDoctor) {
+      return;
+    }
+
+    if (fromIndex === toIndex || fromIndex < 0 || toIndex < 0) {
+      return;
+    }
+
+    setDoctors((prev) =>
+      prev.map((doc) => {
+        if (doc.id !== selectedDoctor.id) {
+          return doc;
+        }
+
+        if (fromIndex >= doc.slides.length || toIndex >= doc.slides.length) {
+          return doc;
+        }
+
+        const updatedSlides = [...doc.slides];
+        const [moved] = updatedSlides.splice(fromIndex, 1);
+        updatedSlides.splice(toIndex, 0, moved);
+
+        return {
+          ...doc,
+          slides: updatedSlides,
+        };
+      }),
+    );
+  }, [selectedDoctor]);
+
   return {
     doctors,
     setDoctors,
@@ -200,6 +231,7 @@ export function useDoctors() {
     addSlidesFromGallery,
     removeSlide,
     reorderSlides,
+    moveSlide,
     isLoadingImages,
   };
 }
