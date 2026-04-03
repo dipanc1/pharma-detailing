@@ -7,22 +7,24 @@ export function useSlideshow() {
   const [currentSlideIndex, setCurrentSlideIndex] = useState(0);
   const [isSlideshowUiVisible, setIsSlideshowUiVisible] = useState(true);
   const [slideNotes, setSlideNotes] = useState<Record<string, string>>({});
+  const canControlNavigationBar =
+    Platform.OS === 'android' && typeof Platform.Version === 'number' && Platform.Version >= 29;
 
   useEffect(() => {
     const hideChrome = isSlideshowMode && !isSlideshowUiVisible;
     RNStatusBar.setHidden(hideChrome, 'fade');
 
-    if (Platform.OS === 'android') {
+    if (canControlNavigationBar) {
       NavigationBar.setVisibilityAsync(hideChrome ? 'hidden' : 'visible').catch(() => {});
     }
 
     return () => {
       RNStatusBar.setHidden(false, 'fade');
-      if (Platform.OS === 'android') {
+      if (canControlNavigationBar) {
         NavigationBar.setVisibilityAsync('visible').catch(() => {});
       }
     };
-  }, [isSlideshowMode, isSlideshowUiVisible]);
+  }, [isSlideshowMode, isSlideshowUiVisible, canControlNavigationBar]);
 
   const openSlideshow = (startIndex = 0) => {
     setCurrentSlideIndex(startIndex);
