@@ -74,6 +74,8 @@ export default function App() {
             data={[{ id: 'page' }]}
             keyExtractor={(item) => item.id}
             renderItem={() => null}
+            showsVerticalScrollIndicator={true}
+            scrollIndicatorInsets={{ right: 4 }}
             ListHeaderComponent={
               <View style={styles.screen}>
                 <View style={styles.header}>
@@ -104,20 +106,23 @@ export default function App() {
                   ) : filteredDoctors.length === 0 ? (
                     <Text style={styles.emptyText}>No doctors match your search.</Text>
                   ) : (
-                    <FlatList
-                      data={filteredDoctors}
-                      keyExtractor={(item) => item.id}
-                      renderItem={({ item }) => (
-                        <DoctorCard
-                          doctor={item}
-                          isActive={item.id === selectedDoctorId}
-                          onSelect={setSelectedDoctorId}
-                          onDelete={removeDoctor}
-                        />
-                      )}
-                      scrollEnabled={false}
-                      ItemSeparatorComponent={() => <View style={styles.separator} />}
-                    />
+                    <View style={styles.listContainer}>
+                      <FlatList
+                        data={filteredDoctors}
+                        keyExtractor={(item) => item.id}
+                        renderItem={({ item }) => (
+                          <DoctorCard
+                            doctor={item}
+                            isActive={item.id === selectedDoctorId}
+                            onSelect={setSelectedDoctorId}
+                            onDelete={removeDoctor}
+                          />
+                        )}
+                        scrollEnabled={true}
+                        ItemSeparatorComponent={() => <View style={styles.separator} />}
+                        nestedScrollEnabled={true}
+                      />
+                    </View>
                   )}
                 </View>
 
@@ -151,23 +156,26 @@ export default function App() {
                       Add images and then drag to set your narrative order before the visit.
                     </Text>
                   ) : (
-                    <FlatList
-                      data={selectedDoctor.slides}
-                      keyExtractor={(item) => item.id}
-                      renderItem={({ item, index }) => (
-                        <SlideCard
-                          slide={item}
-                          index={index}
-                          canMoveUp={index > 0}
-                          canMoveDown={index < selectedDoctor.slides.length - 1}
-                          onMoveUp={() => moveSlide(index, index - 1)}
-                          onMoveDown={() => moveSlide(index, index + 1)}
-                          onRemove={removeSlide}
-                        />
-                      )}
-                      scrollEnabled={false}
-                      contentContainerStyle={styles.slidesList}
-                    />
+                    <View style={styles.listContainer}>
+                      <FlatList
+                        data={selectedDoctor.slides}
+                        keyExtractor={(item) => item.id}
+                        renderItem={({ item, index }) => (
+                          <SlideCard
+                            slide={item}
+                            index={index}
+                            canMoveUp={index > 0}
+                            canMoveDown={index < selectedDoctor.slides.length - 1}
+                            onMoveUp={() => moveSlide(index, index - 1)}
+                            onMoveDown={() => moveSlide(index, index + 1)}
+                            onRemove={removeSlide}
+                          />
+                        )}
+                        scrollEnabled={true}
+                        contentContainerStyle={styles.slidesList}
+                        nestedScrollEnabled={true}
+                      />
+                    </View>
                   )}
                 </View>
               </View>

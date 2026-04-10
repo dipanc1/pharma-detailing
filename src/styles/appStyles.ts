@@ -152,6 +152,11 @@ export const styles = StyleSheet.create({
   slidesList: {
     gap: 10,
   },
+  listContainer: {
+    maxHeight: 350,
+    overflow: 'hidden',
+    marginVertical: 4,
+  },
   slideCard: {
     flexDirection: 'row',
     borderRadius: 12,
@@ -168,6 +173,15 @@ export const styles = StyleSheet.create({
   slideCardActive: {
     opacity: 0.9,
     borderColor: PRIMARY_COLOR,
+  },
+  slideCardDragged: {
+    opacity: 0.8,
+    borderColor: PRIMARY_COLOR,
+    borderWidth: 2,
+    shadowColor: PRIMARY_COLOR,
+    shadowOpacity: 0.3,
+    shadowRadius: 6,
+    elevation: 5,
   },
   slideImage: {
     width: 94,
@@ -379,5 +393,42 @@ export const styles = StyleSheet.create({
     color: DARK_TEXT,
     fontSize: 14,
     fontWeight: '600',
+  },
+  slideButtonGroup: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+    marginTop: 8,
+  },
+  slideControlBtn: {
+    width: 36,
+    height: 36,
+    borderRadius: 8,
+    backgroundColor: LIGHT_BG,
+    borderWidth: 1,
+    borderColor: LIGHT_GRAY,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  slideControlBtnText: {
+    fontSize: 16,
+    fontWeight: '700',
+    color: PRIMARY_COLOR,
+  },
+  slideRemoveBtn: {
+    width: 36,
+    height: 36,
+    borderRadius: 8,
+    backgroundColor: '#fee2e2',
+    borderWidth: 1,
+    borderColor: '#fecaca',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginLeft: 'auto',
+  },
+  slideRemoveBtnText: {
+    fontSize: 16,
+    fontWeight: '700',
+    color: ERROR_COLOR,
   },
 });

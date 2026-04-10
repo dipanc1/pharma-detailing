@@ -1,5 +1,6 @@
-import { memo } from 'react';
+import { memo, useState } from 'react';
 import { Image, Pressable, Text, View } from 'react-native';
+import { PanGestureHandler, GestureHandlerStateChangeNativeEvent } from 'react-native-gesture-handler';
 import { Slide } from '../../types/models';
 import { styles } from '../../styles/appStyles';
 
@@ -22,9 +23,44 @@ function SlideCardComponent({
   onMoveDown,
   onRemove,
 }: SlideCardProps) {
+  const [isDragged, setIsDragged] = useState(false);
+  const [dragOffset, setDragOffset] = useState(0);
+
+  const handlePanEvent = (event: any) => {
+    setDragOffset(event.nativeEvent.translationY);
+  };
+
+  const handlePanStateChange = (event: any) => {
+    const { state } = event.nativeEvent;
+    
+    if (state === 2) { // ACTIVE - dragging
+      setIsDragged(true);
+    } else if (state === 5 || state === 3) { // END or CANCELLED
+      setIsDragged(false);
+      
+      // Drag threshold: 30 pixels
+      const threshold = 30;
+      
+      if (dragOffset < -threshold && canMoveUp) {
+        onMoveUp();
+      } else if (dragOffset > threshold && canMoveDown) {
+        onMoveDown();
+      }
+      
+      setDragOffset(0);
+    }
+  };
 
   return (
-    <View style={styles.slideCard}>
+    <PanGestureHandler
+      onGestureEvent={handlePanEvent}
+      onHandlerStateChange={handlePanStateChange}
+    >
+      <View style={[
+        styles.slideCard,
+        isDragged && styles.slideCardDragged,
+        isDragged && { transform: [{ translateY: dragOffset }] }
+      ]}>
         <Image
           source={{ uri: slide.uri }}
           style={styles.slideImage}
@@ -34,28 +70,32 @@ function SlideCardComponent({
         />
         <View style={styles.slideCardContent}>
           <Text style={styles.slideTitle}>Slide {index + 1}</Text>
-          <Text style={styles.slideHint}>Use arrows to set presentation order</Text>
-          <View style={{ flexDirection: 'row', marginTop: 8 }}>
+          <Text style={styles.slideHint}>Drag to reorder • Use buttons below</Text>
+          <View style={styles.slideButtonGroup}>
             <Pressable
               disabled={!canMoveUp}
               onPress={onMoveUp}
-              style={[styles.secondaryBtn, { marginRight: 8 }, !canMoveUp && { opacity: 0.5 }]}
+              style={[styles.slideControlBtn, !canMoveUp && { opacity: 0.5 }]}
             >
-              <Text style={styles.secondaryBtnText}>Up</Text>
+              <Text style={styles.slideControlBtnText}>↑</Text>
             </Pressable>
             <Pressable
               disabled={!canMoveDown}
               onPress={onMoveDown}
-              style={[styles.secondaryBtn, !canMoveDown && { opacity: 0.5 }]}
+              style={[styles.slideControlBtn, !canMoveDown && { opacity: 0.5 }]}
             >
-              <Text style={styles.secondaryBtnText}>Down</Text>
+              <Text style={styles.slideControlBtnText}>↓</Text>
+            </Pressable>
+            <Pressable
+              onPress={() => onRemove(slide.id)}
+              style={styles.slideRemoveBtn}
+            >
+              <Text style={styles.slideRemoveBtnText}>✕</Text>
             </Pressable>
           </View>
-          <Pressable onPress={() => onRemove(slide.id)} style={styles.removeSlideButton}>
-            <Text style={styles.removeSlideText}>Remove</Text>
-          </Pressable>
         </View>
       </View>
+    </PanGestureHandler>
   );
 }
 
