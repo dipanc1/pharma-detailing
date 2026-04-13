@@ -1,4 +1,4 @@
-import React, { memo, useRef } from 'react';
+import React, { memo, useRef, useState } from 'react';
 import { FlatList, Image, Modal, Pressable, Text, TextInput, View } from 'react-native';
 import { Doctor } from '../../types/models';
 import { styles } from '../../styles/appStyles';
@@ -35,15 +35,26 @@ function SlideshowModalComponent({
   onResetRotation,
 }: SlideshowModalProps) {
   const flatListRef = useRef<FlatList<Doctor['slides'][number]>>(null);
+  const [zoom, setZoom] = useState(1);
+  const [resizeMode, setResizeMode] = useState<'contain' | 'cover'>('contain');
 
   const onMomentumEnd = (event: any) => {
     const slideWidth = event.nativeEvent.layoutMeasurement.width;
     const index = Math.round(event.nativeEvent.contentOffset.x / slideWidth);
     const boundedIndex = Math.max(0, Math.min(doctor.slides.length - 1, index));
     onSlideChange(boundedIndex);
+    setZoom(1);
+    setResizeMode('contain');
   };
 
   const activeSlide = doctor.slides[currentSlideIndex];
+
+  React.useEffect(() => {
+    if (!visible) {
+      setZoom(1);
+      setResizeMode('contain');
+    }
+  }, [visible]);
 
   return (
     <Modal visible={visible} transparent={false} animationType="fade" statusBarTranslucent>
@@ -66,6 +77,7 @@ function SlideshowModalComponent({
           maxToRenderPerBatch={1}
           windowSize={2}
           removeClippedSubviews
+          scrollEventThrottle={16}
           getItemLayout={(_, index) => ({
             length: screenWidth,
             offset: screenWidth * index,
@@ -80,6 +92,7 @@ function SlideshowModalComponent({
             }, 50);
           }}
           onMomentumScrollEnd={onMomentumEnd}
+          onScrollBeginDrag={() => setZoom(1)}
           renderItem={({ item }) => (
             <View style={[styles.slidePage, { width: screenWidth, height: '100%' }]}>
               <Pressable
@@ -89,8 +102,8 @@ function SlideshowModalComponent({
               >
                 <Image
                   source={{ uri: item.uri }}
-                  style={[styles.slideshowImage, { transform: [{ rotate: `${slideRotations[item.id] ?? 0}deg` }] }]}
-                  resizeMode="contain"
+                  style={[styles.slideshowImage, { transform: [{ rotate: `${slideRotations[item.id] ?? 0}deg` }, { scale: zoom }] }]}
+                  resizeMode={resizeMode}
                   resizeMethod="resize"
                   fadeDuration={0}
                 />
@@ -121,6 +134,24 @@ function SlideshowModalComponent({
                       <Text style={styles.resetBtnText}>Reset</Text>
                     </Pressable>
                   )}
+                  <Pressable
+                    onPress={() => setZoom(Math.min(zoom + 0.3, 3))}
+                    style={styles.rotateBtn}
+                  >
+                    <Text style={styles.rotateBtnText}>+</Text>
+                  </Pressable>
+                  <Pressable
+                    onPress={() => setZoom(Math.max(zoom - 0.3, 1))}
+                    style={styles.rotateBtn}
+                  >
+                    <Text style={styles.rotateBtnText}>−</Text>
+                  </Pressable>
+                  <Pressable
+                    onPress={() => setResizeMode(resizeMode === 'contain' ? 'cover' : 'contain')}
+                    style={styles.rotateBtn}
+                  >
+                    <Text style={styles.rotateBtnText}>{resizeMode === 'contain' ? '⛶' : '□'}</Text>
+                  </Pressable>
                 </View>
               )}
             </View>
