@@ -1,4 +1,4 @@
-import { memo, useState } from 'react';
+import React, { memo, useState } from 'react';
 import { Image, Pressable, Text, View } from 'react-native';
 import { PanGestureHandler, GestureHandlerStateChangeNativeEvent } from 'react-native-gesture-handler';
 import { Slide } from '../../types/models';

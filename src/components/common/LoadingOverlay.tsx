@@ -1,3 +1,4 @@
+import React from 'react';
 import { Modal, View, Text, ActivityIndicator } from 'react-native';
 import { styles } from '../../styles/appStyles';
 

@@ -1,4 +1,4 @@
-import { memo } from 'react';
+import React, { memo } from 'react';
 import { Pressable, Text, View } from 'react-native';
 import { Doctor } from '../../types/models';
 import { styles } from '../../styles/appStyles';

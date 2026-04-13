@@ -1,4 +1,4 @@
-import { memo } from 'react';
+import React, { memo } from 'react';
 import { Modal, Pressable, Text, TextInput, View } from 'react-native';
 import { styles } from '../../styles/appStyles';
 

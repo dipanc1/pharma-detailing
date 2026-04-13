@@ -1,4 +1,4 @@
-import { memo, useRef } from 'react';
+import React, { memo, useRef } from 'react';
 import { FlatList, Image, Modal, Pressable, Text, TextInput, View } from 'react-native';
 import { Doctor } from '../../types/models';
 import { styles } from '../../styles/appStyles';
