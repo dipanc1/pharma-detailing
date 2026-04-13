@@ -153,9 +153,21 @@ export const styles = StyleSheet.create({
     gap: 10,
   },
   listContainer: {
-    maxHeight: 350,
+    maxHeight: 600,
     overflow: 'hidden',
     marginVertical: 4,
+  },
+  horizontalScrollerContainer: {
+    height: 320,
+    marginVertical: 4,
+  },
+  slideCardHorizontal: {
+    width: 280,
+    marginRight: 10,
+  },
+  doctorCardHorizontal: {
+    width: 320,
+    marginRight: 12,
   },
   slideCard: {
     flexDirection: 'row',
@@ -305,14 +317,17 @@ export const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#000000',
     justifyContent: 'center',
-    alignItems: 'stretch',
+    alignItems: 'center',
   },
   slidePage: {
     flex: 1,
+    width: '100%',
+    height: '100%',
     justifyContent: 'center',
     alignItems: 'center',
   },
   slideshowImage: {
+    flex: 1,
     width: '100%',
     height: '100%',
   },
@@ -325,6 +340,38 @@ export const styles = StyleSheet.create({
     paddingHorizontal: 16,
     paddingVertical: 12,
     alignItems: 'center',
+  },
+  slideshowControlsRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    width: '100%',
+    marginBottom: 8,
+  },
+  rotateButtonsGroup: {
+    flexDirection: 'row',
+    gap: 8,
+  },
+  rotateBtn: {
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    backgroundColor: 'rgba(59, 130, 246, 0.8)',
+    borderRadius: 6,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  rotateBtnText: {
+    color: '#ffffff',
+    fontWeight: '700',
+    fontSize: 16,
+  },
+  resetBtn: {
+    backgroundColor: 'rgba(107, 114, 128, 0.8)',
+  },
+  resetBtnText: {
+    color: '#ffffff',
+    fontWeight: '600',
+    fontSize: 12,
   },
   slideshowIndicatorText: {
     color: '#ffffff',

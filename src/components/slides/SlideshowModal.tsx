@@ -10,10 +10,13 @@ type SlideshowModalProps = {
   currentSlideIndex: number;
   isUiVisible: boolean;
   slideNotes: Record<string, string>;
+  slideRotations: Record<string, number>;
   onClose: () => void;
   onToggleUi: () => void;
   onSlideChange: (index: number) => void;
   onNoteChange: (slideId: string, value: string) => void;
+  onRotateSlide: (slideId: string) => void;
+  onResetRotation: (slideId: string) => void;
 };
 
 function SlideshowModalComponent({
@@ -23,10 +26,13 @@ function SlideshowModalComponent({
   currentSlideIndex,
   isUiVisible,
   slideNotes,
+  slideRotations,
   onClose,
   onToggleUi,
   onSlideChange,
   onNoteChange,
+  onRotateSlide,
+  onResetRotation,
 }: SlideshowModalProps) {
   const flatListRef = useRef<FlatList<Doctor['slides'][number]>>(null);
 
@@ -75,24 +81,50 @@ function SlideshowModalComponent({
           }}
           onMomentumScrollEnd={onMomentumEnd}
           renderItem={({ item }) => (
-            <Pressable style={[styles.slidePage, { width: screenWidth }]} onPress={onToggleUi}>
-              <Image
-                source={{ uri: item.uri }}
-                style={styles.slideshowImage}
-                resizeMode="contain"
-                resizeMethod="resize"
-                fadeDuration={0}
-              />
-            </Pressable>
+            <View style={[styles.slidePage, { width: screenWidth, height: '100%' }]}>
+              <Pressable
+                onPress={onToggleUi}
+                style={{ flex: 1, width: '100%', height: '100%' }}
+                android_ripple={{ color: 'transparent' }}
+              >
+                <Image
+                  source={{ uri: item.uri }}
+                  style={[styles.slideshowImage, { transform: [{ rotate: `${slideRotations[item.id] ?? 0}deg` }] }]}
+                  resizeMode="contain"
+                  resizeMethod="resize"
+                  fadeDuration={0}
+                />
+              </Pressable>
+            </View>
           )}
         />
 
         {isUiVisible && (
           <View style={styles.slideshowFooter}>
-            <Text style={styles.slideshowIndicatorText}>
-              {currentSlideIndex + 1} / {doctor.slides.length}
-            </Text>
-            <Text style={styles.swipeHintText}>Swipe left/right</Text>
+            <View style={styles.slideshowControlsRow}>
+              <Text style={styles.slideshowIndicatorText}>
+                {currentSlideIndex + 1} / {doctor.slides.length}
+              </Text>
+              {activeSlide && (
+                <View style={styles.rotateButtonsGroup}>
+                  <Pressable
+                    onPress={() => onRotateSlide(activeSlide.id)}
+                    style={styles.rotateBtn}
+                  >
+                    <Text style={styles.rotateBtnText}>↻</Text>
+                  </Pressable>
+                  {(slideRotations[activeSlide.id] ?? 0) !== 0 && (
+                    <Pressable
+                      onPress={() => onResetRotation(activeSlide.id)}
+                      style={[styles.rotateBtn, styles.resetBtn]}
+                    >
+                      <Text style={styles.resetBtnText}>Reset</Text>
+                    </Pressable>
+                  )}
+                </View>
+              )}
+            </View>
+            <Text style={styles.swipeHintText}>Swipe left/right • Rotate and note slides</Text>
             <TextInput
               value={activeSlide ? slideNotes[activeSlide.id] ?? '' : ''}
               onChangeText={(value) => {

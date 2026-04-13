@@ -1,6 +1,6 @@
 // This file must be imported FIRST before any other modules
 // It patches missing globals that JSC on older Android devices doesn't provide
-
+declare const global: any;
 declare global {
   interface Global {
     FormData?: any;

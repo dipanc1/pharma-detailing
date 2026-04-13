@@ -1,3 +1,4 @@
+import React from 'react';
 import { StatusBar } from 'expo-status-bar';
 import {
   FlatList,
@@ -49,10 +50,14 @@ export default function App() {
     isSlideshowUiVisible,
     slideNotes,
     setSlideNotes,
+    slideRotations,
+    setSlideRotations,
     openSlideshow,
     closeSlideshow,
     toggleSlideshowUi,
     onNoteChange,
+    rotateSlide,
+    resetRotation,
   } = useSlideshow();
 
   usePersistence({
@@ -79,8 +84,8 @@ export default function App() {
             ListHeaderComponent={
               <View style={styles.screen}>
                 <View style={styles.header}>
-                  <Text style={styles.title}>DS Medical Agencies</Text>
-                  <Text style={styles.subtitle}>Pharma Detailing Flow</Text>
+                  <Text style={styles.title}>DSMA Detailing</Text>
+                  <Text style={styles.subtitle}>Organize your pharma visits</Text>
                 </View>
 
                 <View style={styles.panel}>
@@ -105,6 +110,28 @@ export default function App() {
                     </Text>
                   ) : filteredDoctors.length === 0 ? (
                     <Text style={styles.emptyText}>No doctors match your search.</Text>
+                  ) : filteredDoctors.length > 5 ? (
+                    <View style={styles.horizontalScrollerContainer}>
+                      <FlatList
+                        data={filteredDoctors}
+                        keyExtractor={(item) => item.id}
+                        horizontal
+                        renderItem={({ item }) => (
+                          <View style={styles.doctorCardHorizontal}>
+                            <DoctorCard
+                              doctor={item}
+                              isActive={item.id === selectedDoctorId}
+                              onSelect={setSelectedDoctorId}
+                              onDelete={removeDoctor}
+                            />
+                          </View>
+                        )}
+                        scrollEnabled={true}
+                        showsHorizontalScrollIndicator={true}
+                        snapToInterval={340}
+                        decelerationRate="fast"
+                      />
+                    </View>
                   ) : (
                     <View style={styles.listContainer}>
                       <FlatList
@@ -155,6 +182,31 @@ export default function App() {
                     <Text style={styles.emptyText}>
                       Add images and then drag to set your narrative order before the visit.
                     </Text>
+                  ) : selectedDoctor.slides.length > 5 ? (
+                    <View style={styles.horizontalScrollerContainer}>
+                      <FlatList
+                        data={selectedDoctor.slides}
+                        keyExtractor={(item) => item.id}
+                        horizontal
+                        renderItem={({ item, index }) => (
+                          <View style={styles.slideCardHorizontal}>
+                            <SlideCard
+                              slide={item}
+                              index={index}
+                              canMoveUp={index > 0}
+                              canMoveDown={index < selectedDoctor.slides.length - 1}
+                              onMoveUp={() => moveSlide(index, index - 1)}
+                              onMoveDown={() => moveSlide(index, index + 1)}
+                              onRemove={removeSlide}
+                            />
+                          </View>
+                        )}
+                        scrollEnabled={true}
+                        showsHorizontalScrollIndicator={true}
+                        snapToInterval={280}
+                        decelerationRate="fast"
+                      />
+                    </View>
                   ) : (
                     <View style={styles.listContainer}>
                       <FlatList
@@ -181,7 +233,6 @@ export default function App() {
               </View>
             }
             ListFooterComponent={<View style={{ height: 20 }} />}
-            scrollIndicatorInsets={{ right: 1 }}
           />
 
           <DoctorFormModal
@@ -207,10 +258,13 @@ export default function App() {
               currentSlideIndex={currentSlideIndex}
               isUiVisible={isSlideshowUiVisible}
               slideNotes={slideNotes}
+              slideRotations={slideRotations}
               onClose={closeSlideshow}
               onToggleUi={toggleSlideshowUi}
               onSlideChange={setCurrentSlideIndex}
               onNoteChange={onNoteChange}
+              onRotateSlide={rotateSlide}
+              onResetRotation={resetRotation}
             />
           )}
         </View>

@@ -7,6 +7,7 @@ export function useSlideshow() {
   const [currentSlideIndex, setCurrentSlideIndex] = useState(0);
   const [isSlideshowUiVisible, setIsSlideshowUiVisible] = useState(true);
   const [slideNotes, setSlideNotes] = useState<Record<string, string>>({});
+  const [slideRotations, setSlideRotations] = useState<Record<string, number>>({});
   const canControlNavigationBar =
     Platform.OS === 'android' && typeof Platform.Version === 'number' && Platform.Version >= 29;
 
@@ -42,6 +43,20 @@ export function useSlideshow() {
     }));
   };
 
+  const rotateSlide = (slideId: string) => {
+    setSlideRotations((prev) => ({
+      ...prev,
+      [slideId]: ((prev[slideId] ?? 0) + 90) % 360,
+    }));
+  };
+
+  const resetRotation = (slideId: string) => {
+    setSlideRotations((prev) => ({
+      ...prev,
+      [slideId]: 0,
+    }));
+  };
+
   return {
     isSlideshowMode,
     currentSlideIndex,
@@ -50,9 +65,13 @@ export function useSlideshow() {
     setIsSlideshowUiVisible,
     slideNotes,
     setSlideNotes,
+    slideRotations,
+    setSlideRotations,
     openSlideshow,
     closeSlideshow,
     toggleSlideshowUi,
     onNoteChange,
+    rotateSlide,
+    resetRotation,
   };
 }
