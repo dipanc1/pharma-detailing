@@ -131,14 +131,9 @@ export default function App() {
               screenWidth={screenWidth}
               currentSlideIndex={currentSlideIndex}
               isUiVisible={isSlideshowUiVisible}
-              slideNotes={slideNotes}
-              slideRotations={slideRotations}
               onClose={closeSlideshow}
               onToggleUi={toggleSlideshowUi}
               onSlideChange={setCurrentSlideIndex}
-              onNoteChange={onNoteChange}
-              onRotateSlide={rotateSlide}
-              onResetRotation={resetRotation}
             />
           )}
         </View>
